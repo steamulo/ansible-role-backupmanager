@@ -1,0 +1,60 @@
+---
+# defaults file for backup-manager
+
+bm_user : backup-manager
+bm_user_remove_shell: true
+bm_packages:
+  - backup-manager
+
+bm_backup_schedule:
+ - starthour: 00
+   startmin: 01
+   startday: "*"
+   tag: backup_schedule
+
+# General Vars
+bm_archive_method: tarball-incremental
+bm_tarball_directories: /home
+bm_repository_root: /var/backup_manager_archives/
+bm_tarball_blacklist: /var/backup_manager_archives
+bm_tarballinc_masterdatetype: weekly
+bm_tarballinc_masterdatevalue: 6
+bm_archive_ttl: 5
+bm_archive_prefix: $HOSTNAME
+bm_upload_method: none
+bm_upload_destination:
+
+# S3 upload
+bm_upload_s3_bucket: steamulo-backup
+bm_upload_s3_access_key: 
+bm_upload_s3_secret_key:
+bm_upload_s3_schedule:
+ - starthour: 02
+   startmin: 00
+   startday: "*"
+   tag: s3_upload_schedule
+
+# SSH upload
+bm_upload_ssh_user: bmngr
+bm_upload_ssh_key:
+bm_upload_ssh_hosts:
+bm_upload_ssh_port:
+bm_upload_ssh_destination:
+bm_upload_ssh_purge: true
+bm_upload_ssh_ttl:
+
+# Mysql Vars
+bm_mysql_databases: __ALL__
+bm_mysql_adminlogin: root
+bm_mysql_adminpass: 
+bm_mysql_host: localhost
+bm_mysql_port: 3306
+bm_mysql_extra_options:
+
+# PostgreSQL Vars
+bm_pgsql_databases: __ALL__
+bm_pgsql_adminlogin: root
+bm_pgsql_adminpass: 
+bm_pgsql_host: localhost
+bm_pgsql_port: 5432
+bm_pgsql_extra_options:

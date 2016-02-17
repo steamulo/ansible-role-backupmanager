@@ -1,0 +1,26 @@
+---
+
+galaxy_info:
+  author: hebergement@steamulo.com
+  description: Install and configure backupmanager and cron to send to s3 bucket
+  company: Steamulo
+  license: "Apache v2.0"
+  min_ansible_version: 1.9
+  platforms:
+  - name: Ubuntu
+    versions:
+    - precise
+    - raring
+    - saucy
+    - trusty
+  categories: []
+
+dependencies:
+   - src: git+ssh://git@github.com/STEAMULO/ansible-role-s3cmd
+     version: v01.00.001
+     name: steamulo.s3cmd
+     tags: s3cmd
+     s3cmd_user: "{{ bm_user }}"
+     aws_access_key: "{{ bm_upload_s3_access_key }}"
+     aws_secret_key: "{{ bm_upload_s3_secret_key }}"
+     when: bm_upload_s3_access_key is defined and bm_upload_s3_secret_key is defined
