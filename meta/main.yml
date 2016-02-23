@@ -16,7 +16,7 @@ galaxy_info:
   categories: []
 
 dependencies:
-   - src: git+ssh://git@github.com/STEAMULO/ansible-role-s3cmd
+   - src: https://github.com/STEAMULO/ansible-role-s3cmd
      version: v01.00.001
      name: steamulo.s3cmd
      tags: s3cmd
