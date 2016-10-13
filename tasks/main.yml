@@ -3,27 +3,28 @@
 
 - name: Remove shell access on {{ bm_user }} user
   user:
-     name={{ bm_user }}
-     state=present
-     shell=/usr/sbin/nologin
+    name: "{{ bm_user }}"
+    state: "present"
+    shell: "/usr/sbin/nologin"
   when: bm_user_remove_shell
 
 - name: Install required packages
-  apt: name={{ item }} state=latest
-  with_items: bm_packages
+  apt: name="{{ item }}" state=latest
+  with_items: "{{ bm_packages }}"
 
 - name: Render /etc/backup-manager.conf
   template: src=backup-manager.conf.j2 dest=/etc/backup-manager.conf
 
 - name: Creates cronjob to execute backup-manager
-  cron: day="{{ item.startday | default('*') }}"
-        hour="{{ item.starthour }}"
-        minute="{{ item.startmin | default('0') }}"
-        name="backup-manager_backup tag='{{ item.tag }}'"
-        user="root"
-        job="/usr/sbin/backup-manager"
+  cron:
+    day: "{{ item.startday | default('*') }}"
+    hour: "{{ item.starthour }}"
+    minute: "{{ item.startmin | default('0') }}"
+    name: "backup-manager_backup tag='{{ item.tag }}'"
+    user: "root"
+    job: "/usr/sbin/backup-manager"
   when: (item.disable is not defined or not item.disable) and item.tag is defined and item.starthour is defined
-  with_items: bm_backup_schedule
+  with_items: "{{ bm_backup_schedule }}"
 
 - name : Set default path if bm_upload_destination is empty
   set_fact:
@@ -31,11 +32,12 @@
   when: not bm_upload_destination
 
 - name: Creates cronjob to upload on S3
-  cron: day="{{ item.startday | default('*') }}"
-        hour="{{ item.starthour }}"
-        minute="{{ item.startmin | default('0') }}"
-        name="backup-manager_backup tag='{{ item.tag }}'"
-        user={{ bm_user }}
-        job="/usr/bin/s3cmd sync -c /home/{{ bm_user }}/.s3cfg --skip-existing --delete-removed {{ bm_repository_root }} s3://{{ bm_upload_s3_bucket }}/{{ bm_upload_destination }}/"
+  cron:
+    day: "{{ item.startday | default('*') }}"
+    hour: "{{ item.starthour }}"
+    minute: "{{ item.startmin | default('0') }}"
+    name: "backup-manager_backup tag='{{ item.tag }}'"
+    user: "{{ bm_user }}"
+    job: "/usr/bin/s3cmd sync -c /home/{{ bm_user }}/.s3cfg --skip-existing --delete-removed {{ bm_repository_root }} s3://{{ bm_upload_s3_bucket }}/{{ bm_upload_destination }}/"
   when: (item.disable is not defined or not item.disable) and item.tag is defined and item.starthour is defined
-  with_items: bm_upload_s3_schedule
+  with_items: "{{ bm_upload_s3_schedule }}"
