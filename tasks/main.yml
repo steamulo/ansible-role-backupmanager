@@ -1,7 +1,7 @@
 ---
 # tasks file for backup-manager
 
-- name: Remove shell access on {{ bm_user }} user
+- name: Remove shell access on {{ bm_user }} user and add syslog group
   user:
     name: "{{ bm_user }}"
     state: "present"
@@ -22,7 +22,7 @@
     minute: "{{ item.startmin | default('0') }}"
     name: "backup-manager_backup tag='{{ item.tag }}'"
     user: "root"
-    job: "/usr/sbin/backup-manager"
+    job: "/usr/sbin/backup-manager --verbose | xargs -I{} echo \"$(date +'[%d/%m/%Y:%k:%M:%S %z]') {}\" >> {{ item.log|default(bm_backup_schedule_default_log) }} 2>&1"
   when: (item.disable is not defined or not item.disable) and item.tag is defined and item.starthour is defined
   with_items: "{{ bm_backup_schedule }}"
 
@@ -38,6 +38,9 @@
     minute: "{{ item.startmin | default('0') }}"
     name: "backup-manager_backup tag='{{ item.tag }}'"
     user: "{{ bm_user }}"
-    job: "/usr/bin/s3cmd sync -c /home/{{ bm_user }}/.s3cfg --skip-existing --delete-removed {{ bm_repository_root }} s3://{{ bm_upload_s3_bucket }}/{{ bm_upload_destination }}/"
+    job: "/usr/bin/s3cmd sync -c /home/{{ bm_user }}/.s3cfg --skip-existing --delete-removed {{ bm_repository_root }} s3://{{ bm_upload_s3_bucket }}/{{ bm_upload_destination }}/ | xargs -I{} echo \"$(date +'[%d/%m/%Y:%k:%M:%S %z]') {}\" >> {{ item.log|default(bm_s3cmd_default_log) }} 2>&1"
   when: (item.disable is not defined or not item.disable) and item.tag is defined and item.starthour is defined
   with_items: "{{ bm_upload_s3_schedule }}"
+
+- name: Create default s3cmd log file with write access
+  file: path="{{ bm_s3cmd_default_log }}" owner="{{ bm_user }}" group="{{ bm_user }}" state="touch"

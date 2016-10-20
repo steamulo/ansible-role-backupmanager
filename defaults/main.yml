@@ -6,6 +6,8 @@ bm_user_remove_shell: true
 bm_packages:
   - backup-manager
 
+bm_backup_schedule_default_log: '/var/log/backup-manager.log'
+bm_s3cmd_default_log: '/var/log/s3cmd.log'
 bm_backup_schedule:
  - starthour: 00
    startmin: 01
@@ -58,3 +60,10 @@ bm_pgsql_adminpass: ''
 bm_pgsql_host: localhost
 bm_pgsql_port: 5432
 bm_pgsql_extra_options: ''
+
+# logger
+bm_logger: true
+bm_logger_level: warn
+
+bm_prebackup_command: ""
+bm_postbackup_command: ""

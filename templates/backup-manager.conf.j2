@@ -518,20 +518,20 @@ export BM_BURNING_MAXSIZE="650"
 
 # Every output made can be sent to syslog
 # set this to "true" or "false"
-export BM_LOGGER="true"
+export BM_LOGGER="{{ bm_logger }}"
 
 # Which level of messages do you want to log to syslog?
 # possible values are : debug,info,warning,error
-export BM_LOGGER_LEVEL="warning"
+export BM_LOGGER_LEVEL="{{ bm_logger_level }}"
 
 # You can choose which facility to use
 export BM_LOGGER_FACILITY="user"
 
 # Enter here some shell script.
 # It will be executed before the first action of backup-manager.
-export BM_PRE_BACKUP_COMMAND=""
+export BM_PRE_BACKUP_COMMAND="{{ bm_prebackup_command }}"
 
 # Enter here some shell script.
 # It will be executed after the last action of backup-manager.
-export BM_POST_BACKUP_COMMAND=""
+export BM_POST_BACKUP_COMMAND="{{ bm_postbackup_command }}"
 
