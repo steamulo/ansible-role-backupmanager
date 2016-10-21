@@ -22,7 +22,7 @@
     minute: "{{ item.startmin | default('0') }}"
     name: "backup-manager_backup tag='{{ item.tag }}'"
     user: "root"
-    job: "/usr/sbin/backup-manager --verbose | xargs -I{} echo \"$(date +'[%d/%m/%Y:%k:%M:%S %z]') {}\" >> {{ item.log|default(bm_backup_schedule_default_log) }} 2>&1"
+    job: "/usr/sbin/backup-manager --verbose 2>&1 | logger -t {{ bm_bkpcron_rsyslog_progname }}"
   when: (item.disable is not defined or not item.disable) and item.tag is defined and item.starthour is defined
   with_items: "{{ bm_backup_schedule }}"
 
@@ -38,9 +38,17 @@
     minute: "{{ item.startmin | default('0') }}"
     name: "backup-manager_backup tag='{{ item.tag }}'"
     user: "{{ bm_user }}"
-    job: "/usr/bin/s3cmd sync -c /home/{{ bm_user }}/.s3cfg --skip-existing --delete-removed {{ bm_repository_root }} s3://{{ bm_upload_s3_bucket }}/{{ bm_upload_destination }}/ | xargs -I{} echo \"$(date +'[%d/%m/%Y:%k:%M:%S %z]') {}\" >> {{ item.log|default(bm_s3cmd_default_log) }} 2>&1"
+    job: "/usr/bin/s3cmd sync -c /home/{{ bm_user }}/.s3cfg --skip-existing --delete-removed {{ bm_repository_root }} s3://{{ bm_upload_s3_bucket }}/{{ bm_upload_destination }}/ 2>&1 | logger -t {{ bm_s3cron_rsyslog_progname }}"
   when: (item.disable is not defined or not item.disable) and item.tag is defined and item.starthour is defined
   with_items: "{{ bm_upload_s3_schedule }}"
 
-- name: Create default s3cmd log file with write access
-  file: path="{{ bm_s3cmd_default_log }}" owner="{{ bm_user }}" group="{{ bm_user }}" state="touch"
+- name: Activate backup manager customs logs in syslog
+  lineinfile:
+    line: "if $programname == '{{ item }}' then /var/log/{{ item }}.log"
+    regexp: "^if \\$programname"
+    dest: "/etc/rsyslog.d/{{ item }}.conf"
+    create: true
+  with_items:
+    - "{{ bm_bkpcron_rsyslog_progname }}"
+    - "{{ bm_s3cron_rsyslog_progname }}"
+  notify: rsyslog restart

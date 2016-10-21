@@ -1,13 +1,13 @@
 ---
 # defaults file for backup-manager
 
+bm_bkpcron_rsyslog_progname: backup-manager-cron-bkp
+bm_s3cron_rsyslog_progname: backup-manager-cron-s3
 bm_user : backup-manager
 bm_user_remove_shell: true
 bm_packages:
   - backup-manager
 
-bm_backup_schedule_default_log: '/var/log/backup-manager.log'
-bm_s3cmd_default_log: '/var/log/s3cmd.log'
 bm_backup_schedule:
  - starthour: 00
    startmin: 01

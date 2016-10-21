@@ -1,0 +1,6 @@
+
+- name: Remove old log files
+  file: path="{{ item }}" state=absent
+  with_items:
+    - "{{ bm_backup_schedule_default_log|default('/var/log/backup-manager.log') }}"
+    - "{{ bm_s3cmd_default_log|default('/var/log/s3cmd.log') }}"
