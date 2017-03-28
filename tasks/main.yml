@@ -15,6 +15,7 @@
 - name: Render /etc/backup-manager.conf
   template: src=backup-manager.conf.j2 dest=/etc/backup-manager.conf
 
+#HOME is unset to avoid using .my.cnf config : https://github.com/sukria/Backup-Manager/issues/12
 - name: Creates cronjob to execute backup-manager
   cron:
     day: "{{ item.startday | default('*') }}"
@@ -22,7 +23,7 @@
     minute: "{{ item.startmin | default('0') }}"
     name: "backup-manager_backup tag='{{ item.tag }}'"
     user: "root"
-    job: "/usr/sbin/backup-manager --verbose 2>&1 | logger -t {{ bm_bkpcron_rsyslog_progname }}"
+    job: "HOME="" /usr/sbin/backup-manager --verbose 2>&1 | logger -t {{ bm_bkpcron_rsyslog_progname }}"
   when: (item.disable is not defined or not item.disable) and item.tag is defined and item.starthour is defined
   with_items: "{{ bm_backup_schedule }}"
 
