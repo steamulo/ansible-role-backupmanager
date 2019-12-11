@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/STEAMULO/ansible-role-backupmanager.svg?branch=master)](https://travis-ci.com/STEAMULO/steamulo.steamengine)
+
 Backup Manager
 =========
 
