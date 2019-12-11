@@ -1,10 +1,7 @@
-Role Name
+Backup Manager
 =========
 
 Installation and basic configuration of backup-manager
-
-Requirements
-------------
 
 Role Variables
 --------------
@@ -48,12 +45,9 @@ Role Variables
 - **bm_upload_s3_bucket**: The bucket to upload to. This bucket must be dedicated to backup-manager. Don't put the path here (see bm_upload_destination), just the bucket !!!
 - **bm_upload_s3_access_key**: The S3 access key provided to you
 - **bm_upload_s3_secret_key**: The S3 secret key provided to you
-- **bm_upload_s3_schedule**: upload s3 schedule object
-     starthou
-     startmin
-     startday
-     tag
-     disable
+- **bm_upload_s3_ttl**: You can specify a time to live for archives uploaded on S3. If not set, no purging is done on S3.
+- **bm_upload_s3_endpoint_url**: Alternative S3 api endpoint
+- **bm_upload_s3_host_bucket**: Alternative bucket url
 
 ### SSH upload
 
@@ -84,22 +78,34 @@ Role Variables
 - **bm_pgsql_port**: The port where PostgreSQL listen to on the host
 - **bm_pgsql_extra_options**: Extra options to append to pg_dump
 
-Dependencies
+Example Playbook
 ------------
 
-Example Playbook
-----------------
+An example can be found under the [molecule folder](molecule/default/playbook.yml)
 
-    - hosts: servers
-      roles:
-        - { role: steamroles-interne/backup-manager, tags: [ backup-manager ] }
+Development
+------------
 
+This role use the [molecule framework](https://molecule.readthedocs.io/en/stable/) in order to simplify the development process.
+
+Requirements:
+* [Python 2.7](https://www.python.org/download/releases/2.7/)
+* [Docker](https://docs.docker.com/install/linux/docker-ce/ubuntu/)
+
+Setup your local environnement with python virtualenv prior to using molecule :
+
+```virtualenv ~/.virtualenv/backupmanager && source ~/.virtualenv/backupmanager/bin/activate && pip install -r requirements.txt```
+
+Use ```molecule converge``` to create a local environnement and ```molecule login``` to log into the test machine.
+
+Before any commit ensure that every test are passing with ```molecule test```
 
 License
--------
+------------
 
+BSD
 
 Author Information
-------------------
+------------
 
-STEAMULO - http://www.steamulo.com
+Steamulo - http://www.steamulo.com

@@ -1,0 +1,12 @@
+[default]
+access_key = {{ bm_upload_s3_access_key }}
+secret_key = {{ bm_upload_s3_secret_key }}
+use_https = True
+
+{% if bm_upload_s3_endpoint_url is defined and bm_upload_s3_endpoint_url %}
+host_base = {{ bm_upload_s3_host_base }}
+{% endif %}
+
+{% if bm_upload_s3_host_bucket is defined and bm_upload_s3_host_bucket %}
+host_bucket = {{ bm_upload_s3_host_bucket }}
+{% endif %}

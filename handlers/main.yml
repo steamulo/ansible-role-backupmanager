@@ -1,5 +1,4 @@
 ---
-# handlers file for backup-manager
 
 - name: rsyslog restart
   service: name=rsyslog state=restarted

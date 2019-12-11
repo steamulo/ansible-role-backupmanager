@@ -1,5 +1,4 @@
 ---
-# tasks file for backup-manager
 
 - name: Remove shell access on {{ bm_user }} user and add syslog group
   user:
@@ -9,11 +8,38 @@
   when: bm_user_remove_shell
 
 - name: Install required packages
-  apt: name="{{ item }}" state=latest
-  with_items: "{{ bm_packages }}"
+  apt:
+    name: "{{ bm_packages }}"
+
+- name: Configure s3cmd
+  template:
+    src: "s3cfg.j2"
+    dest: "/home/{{ bm_user }}/.s3cfg"
+    owner: "{{ bm_user }}"
+    group: "{{ bm_user }}"
+    mode: u=r,g=r,o=
+  when: bm_upload_method == 's3'
 
 - name: Render /etc/backup-manager.conf
-  template: src=backup-manager.conf.j2 dest=/etc/backup-manager.conf
+  template:
+    src: backup-manager.conf.j2
+    dest: /etc/backup-manager.conf
+
+- name: Render pre_backup.sh
+  template:
+    src: pre_backup.sh.j2
+    dest: "/home/{{ bm_user }}/pre_backup.sh"
+    owner: "{{ bm_user }}"
+    group: "{{ bm_user }}"
+    mode: u=rx,g=rx,o=
+
+- name: Render post_backup.sh
+  template:
+    src: post_backup.sh.j2
+    dest: "/home/{{ bm_user }}/post_backup.sh"
+    owner: "{{ bm_user }}"
+    group: "{{ bm_user }}"
+    mode: u=rx,g=rx,o=
 
 #HOME is unset to avoid using .my.cnf config : https://github.com/sukria/Backup-Manager/issues/12
 - name: Creates cronjob to execute backup-manager
@@ -23,25 +49,9 @@
     minute: "{{ item.startmin | default('0') }}"
     name: "backup-manager_backup tag='{{ item.tag }}'"
     user: "root"
-    job: "HOME='' /usr/sbin/backup-manager --verbose 2>&1 | logger -t {{ bm_bkpcron_rsyslog_progname }}"
+    job: "HOME='' /usr/sbin/backup-manager --verbose 2>&1 | logger -t {{ bm_bkpcron_rsyslog_progname }}"
   when: (item.disable is not defined or not item.disable) and item.tag is defined and item.starthour is defined
   with_items: "{{ bm_backup_schedule }}"
-
-- name : Set default path if bm_upload_destination is empty
-  set_fact:
-    bm_upload_destination: "{{ ansible_hostname }}"
-  when: not bm_upload_destination
-
-- name: Creates cronjob to upload on S3
-  cron:
-    day: "{{ item.startday | default('*') }}"
-    hour: "{{ item.starthour }}"
-    minute: "{{ item.startmin | default('0') }}"
-    name: "backup-manager_backup tag='{{ item.tag }}'"
-    user: "{{ bm_user }}"
-    job: "/usr/bin/s3cmd sync -c /home/{{ bm_user }}/.s3cfg --skip-existing --delete-removed {{ bm_repository_root }} s3://{{ bm_upload_s3_bucket }}/{{ bm_upload_destination }}/ 2>&1 | logger -t {{ bm_s3cron_rsyslog_progname }}"
-  when: (item.disable is not defined or not item.disable) and item.tag is defined and item.starthour is defined
-  with_items: "{{ bm_upload_s3_schedule }}"
 
 - name: Activate backup manager customs logs in syslog
   lineinfile:
@@ -50,6 +60,5 @@
     dest: "/etc/rsyslog.d/{{ item }}.conf"
     create: true
   with_items:
-    - "{{ bm_bkpcron_rsyslog_progname }}"
-    - "{{ bm_s3cron_rsyslog_progname }}"
+    - "{{ bm_bkpcron_rsyslog_progname }}"
   notify: rsyslog restart

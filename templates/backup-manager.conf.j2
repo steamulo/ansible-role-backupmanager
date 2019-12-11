@@ -324,7 +324,13 @@ export BM_PIPE_COMPRESS
 
 # If you don't want to use any upload method (you don't want to
 # upload files to remote hosts) then choose "none"
+
+{% if bm_upload_method == 's3' %}
+export BM_UPLOAD_METHOD="none"
+{% else %}
 export BM_UPLOAD_METHOD="{{ bm_upload_method }}"
+{% endif %}
+
 
 # where to upload (global to all methods. Not required to be set for S3)
 export BM_UPLOAD_HOSTS=""
@@ -344,7 +350,7 @@ export BM_UPLOAD_DESTINATION="{{ bm_upload_destination }}"
 # You can specify any filename, but it is recommended to keep the database
 # inside the archive repository. The variable's value has been preset to
 # that.
-#export BM_UPLOADED_ARCHIVES=${BM_REPOSITORY_ROOT}/${BM_ARCHIVE_PREFIX}-uploaded.list
+export BM_UPLOADED_ARCHIVES=${BM_REPOSITORY_ROOT}/${BM_ARCHIVE_PREFIX}-uploaded.list
 
 ##############################################################
 # The SSH method
@@ -423,26 +429,6 @@ export BM_UPLOAD_FTP_TTL=""
 # destination for FTP uploads (overrides BM_UPLOAD_DESTINATION)
 export BM_UPLOAD_FTP_DESTINATION=""
 
-
-##############################################################
-# The S3 method
-#############################################################
-
-# The Amazon S3 method requires that you secure an S3
-# account. See http://aws.amazon.com
-
-# The bucket to upload to. This bucket must be dedicated to backup-manager
-export BM_UPLOAD_S3_DESTINATION=""
-
-# the S3 access key provided to you
-export BM_UPLOAD_S3_ACCESS_KEY=""
-
-# the S3 secret key provided to you
-export BM_UPLOAD_S3_SECRET_KEY=""
-
-# purge archives on remote hosts before uploading?
-export BM_UPLOAD_S3_PURGE=""
-
 ##############################################################
 # The RSYNC method
 #############################################################
@@ -463,54 +449,6 @@ export BM_UPLOAD_RSYNC_HOSTS=""
 # enter true or false (true can lead to huge archives, be careful).    
 export BM_UPLOAD_RSYNC_DUMPSYMLINKS="false"
 
-##############################################################
-# Section "BURNING" 
-# - Automatic CDR/CDRW/DVDR burning
-#############################################################
-
-# the method of burning archives from the list :
-#  - DVD    : burn archives on a DVD medium
-#             (that doesn't need formatting, like DVD+RW).
-#
-#  - DVD-RW : blank the DVD medium and burn archives 
-#             (recommanded for DVD-RW media).
-#
-#  - CDRW   : blank the CDRW and burn the whole 
-#             ARCHIVES_REPOSITORY or only 
-#             the generated archives.
-#
-#  - CDR    : burn the whole ARCHIVES_REPOSITORY or 
-#             only the generated archives.
-#  - none   : disable the burning system
-#
-# Note that if backup-manager is run from interactive prompt you
-# will be asked to insert disc(s) when needed
-
-export BM_BURNING_METHOD="none"
-
-# When the CD is burnt, it is possible to check every file's 
-# MD5 checksum to see if the CD is not corrupted.
-export BM_BURNING_CHKMD5="false"
-
-# The device to use for mounting the cdrom
-export BM_BURNING_DEVICE="/dev/cdrom"
-
-# You can force cdrecord to use a specific device
-# Fill in the full path to the device to use or even
-# e.g. BM_BURNING_DEVFORCED="/dev/cdrom"
-# If none specified, the default cdrecord device will be used.
-export BM_BURNING_DEVFORCED=""
-
-# By default backup-manager will make Joliet media (using the mkisofs switches
-# : "-R -J"). You can change these if you want to use non-Joliet disc images.
-# Change this only if you know what you're doing. Refer to mkisofs(8) for
-# details.
-export BM_BURNING_ISO_FLAGS="-R -J"
-
-# enter here the max size of your media 
-# (usal sizes are 4200 for DVD media and 700 or 800 for CDR media)
-export BM_BURNING_MAXSIZE="650"
-
 
 ##############################################################
 # Advanced settings, use this with care.
@@ -529,9 +467,9 @@ export BM_LOGGER_FACILITY="user"
 
 # Enter here some shell script.
 # It will be executed before the first action of backup-manager.
-export BM_PRE_BACKUP_COMMAND="{{ bm_prebackup_command }}"
+export BM_PRE_BACKUP_COMMAND="/home/{{ bm_user }}/pre_backup.sh"
 
 # Enter here some shell script.
 # It will be executed after the last action of backup-manager.
-export BM_POST_BACKUP_COMMAND="{{ bm_postbackup_command }}"
+export BM_POST_BACKUP_COMMAND="/home/{{ bm_user }}/post_backup.sh"
 

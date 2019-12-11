@@ -1,40 +1,36 @@
 ---
-# defaults file for backup-manager
-
-bm_bkpcron_rsyslog_progname: backup-manager-cron-bkp
-bm_s3cron_rsyslog_progname: backup-manager-cron-s3
+# General Vars
 bm_user : backup-manager
 bm_user_remove_shell: true
-bm_packages:
-  - backup-manager
-
 bm_backup_schedule:
  - starthour: 00
    startmin: 01
    startday: "*"
    tag: backup_schedule
-
-# General Vars
 bm_archive_method: tarball-incremental
 bm_tarball_directories: /home
-bm_repository_root: /var/backup_manager_archives/
+bm_repository_root: /var/backup_manager_archives
 bm_tarball_blacklist: /var/backup_manager_archives
 bm_tarballinc_masterdatetype: weekly
 bm_tarballinc_masterdatevalue: 6
 bm_archive_ttl: 5
 bm_archive_prefix: $HOSTNAME
 bm_upload_method: none
-bm_upload_destination: ''
+bm_upload_destination: "{{ ansible_hostname }}"
+
+bm_packages:
+  - backup-manager
+  - s3cmd
+
+bm_bkpcron_rsyslog_progname: backup-manager-cron-bkp
 
 # S3 upload
-bm_upload_s3_bucket: steamulo-backup
+bm_upload_s3_bucket: ''
 bm_upload_s3_access_key: 
 bm_upload_s3_secret_key:
-bm_upload_s3_schedule:
- - starthour: 02
-   startmin: 00
-   startday: "*"
-   tag: s3_upload_schedule
+bm_upload_s3_ttl:
+bm_upload_s3_endpoint_url:
+bm_upload_s3_host_bucket:
 
 # SSH upload
 bm_upload_ssh_user: bmngr
