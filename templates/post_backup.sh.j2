@@ -3,5 +3,5 @@
 {{ bm_postbackup_command }}
 
 {% if bm_upload_method == 's3' %}
-/usr/bin/s3cmd sync -c /home/{{ bm_user }}/.s3cfg --skip-existing {{ bm_repository_root }}/ s3://{{ bm_upload_s3_bucket }}/{{ bm_upload_destination }}/
+/usr/bin/s3cmd sync -c /home/{{ bm_user }}/.s3cfg --skip-existing{% for exclude in bm_upload_s3_excludes %} --exclude '{{ exclude }}'{% endfor %} {{ bm_repository_root }}/ s3://{{ bm_upload_s3_bucket }}/{{ bm_upload_destination }}/
 {% endif %}

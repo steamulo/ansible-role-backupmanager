@@ -50,6 +50,7 @@ Role Variables
 - **bm_upload_s3_ttl**: You can specify a time to live for archives uploaded on S3. If not set, no purging is done on S3.
 - **bm_upload_s3_endpoint_url**: Alternative S3 api endpoint
 - **bm_upload_s3_host_bucket**: Alternative bucket url
+- **bm_upload_s3_excludes**: List of exclude pattern for upload
 
 ### SSH upload
 
