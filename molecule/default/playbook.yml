@@ -1,6 +1,26 @@
 ---
+
+
+
 - name: Converge
   hosts: instance
   become: true
+
+  pre_tasks:
+    - name: Install dependencies (Debian)
+      apt:
+        name:
+          - software-properties-common
+          - rsyslog
+        update_cache: true
+      when: ansible_os_family == 'Debian'
+      changed_when: false
+    - name: Install dependencies (RedHat)
+      yum:
+        name:
+          - rsyslog
+      when: ansible_os_family == 'RedHat'
+      changed_when: false
+
   roles:
     - role: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') | basename }}"

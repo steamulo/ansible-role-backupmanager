@@ -1,15 +1,13 @@
 ---
 
-- name: Remove shell access on {{ bm_user }} user and add syslog group
+- name: "Create {{ bm_user }} user"
   user:
     name: "{{ bm_user }}"
     state: "present"
     shell: "/usr/sbin/nologin"
-  when: bm_user_remove_shell
 
-- name: Install required packages
-  apt:
-    name: "{{ bm_packages }}"
+- name: Include OS-specific tasks
+  include_tasks: "{{ ansible_os_family | lower }}.yml"
 
 - name: Configure s3cmd
   template:

@@ -1,7 +1,6 @@
 ---
 # General Vars
 bm_user : backup-manager
-bm_user_remove_shell: true
 bm_backup_schedule:
  - starthour: 00
    startmin: 01

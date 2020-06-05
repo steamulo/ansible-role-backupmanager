@@ -9,18 +9,16 @@ Role Variables
 --------------
 
 - **bm_user**: user who possess rights on archives and execute the s3-cmd
-- **bm_user_remove_shell**: remove the shell access for the user (enabled by default!)
 - **bm_backup_schedule**: backup schedule object
-     starthou
-     startmin
-     startday
-     tag
-     disable
+    - starthour
+    - startmin
+    - startday
+    - tag
+    - disable
 
 ### General vars
 
-- **bm_archive_method**: The backup method to use. 
-    Available methods are:
+- **bm_archive_method**: The backup method to use. Available methods are:
     - tarball
     - tarball-incremental
     - mysql
@@ -33,8 +31,7 @@ Role Variables
 - **bm_tarballinc_masterdatevalue**: Day of creation of the full archive (1 for monday, 7 for sunday) for a weekly frequency and from 1 to 31 for a monthly frequency)
 - **bm_archive_ttl**: Number of days we have to keep an archive (Time To Live)
 - **bm_archive_prefix**: Prefix of every archive on that box
-- **bm_upload_method**: Method of upload
-    Available methods are:
+- **bm_upload_method**: Method of upload. Available methods are:
     - ssh
     - rsync (needs to implemented)
     - scp
